@@ -1,0 +1,309 @@
+<head>
+    <link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet'>
+    <style>
+        :root {
+            /* Color Palette */
+            --button-color: #1b1b1f;
+            --hover-color: #627b99;
+            --text-tone1: #D8DEE9;
+            --text-tone2: #ECEFF4;
+            --background-tone1: #111113;
+            --background-tone2: #4C566A;
+
+            /* Font */
+            --font-family: 'Open Sans', sans-serif;
+            --primary-time-font-size: 12vh;
+            --secondary-time-font-size: 8vh;
+            --tertiary-time-font-size: 6vh;
+            --primary-text-font-size: 8vh;
+            --secondary-text-font-size: 6vh;
+            --tertiary-text-font-size: 4vh;
+
+            --list-font-size: 2vh;
+            --list-name-font-size: 3vh;
+            --greeting-font-size: 4vh;
+
+            background-color: var(--background-tone1);
+        }
+        * { 
+            -moz-box-sizing: border-box; 
+            -webkit-box-sizing: border-box; 
+            box-sizing: border-box; 
+        }
+        .links-container-h {            
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding-left: 10px;
+            padding-right: 10px;
+            padding-bottom: 10vh;
+            padding-top: 10px;
+            margin: 0;
+        }
+        .button-container-h {
+            height: 40vh;
+            width: 60vw;
+            display: grid;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 5vh 5vh;
+            padding: 5vh;
+            margin: 0;
+        }
+        .button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--button-color);
+            border-radius: 1vh;
+            color: var(--text-tone1);
+            text-decoration: none;
+            font-family: var(--font-family);
+            box-shadow: 0 7px 10px rgba(0, 0, 0, 0.3);
+            height: 100%;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        .button:hover {
+            /* jump up a bit */
+            transform: translateY(-5px);
+            background-color: var(--hover-color);
+            color: var(--text-tone2);
+        }
+        .clock {
+            padding-top: 10vh;
+            justify-content: center;
+            align-items: baseline;
+            border-radius: 2px;
+            gap: 2px;
+            font-family: var(--font-family);
+            font-size: var(--primary-time-font-size);
+            font-weight: bolder;
+            padding-left: 10px;
+            padding-right: 10px;
+            padding-bottom: 10px;
+            margin: 0;
+        }
+        .time {
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            flex-direction: row;
+        }
+        .greeting-text {
+            font-size: var(--tertiary-text-font-size);
+            color: var(--text-tone1);
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            flex-direction: row;
+        }
+        .clock p {
+            margin: 0;
+            padding: 0;
+            color: var(--text-tone1);
+        }
+        .clock span {
+            margin: 0;
+            padding: 0;
+            color: var(--text-tone1);
+        }
+        .clock #ampm {
+            margin: 0;
+            padding: 0;
+            color: var(--text-tone1);
+            padding: 0 0 0 10px;
+            font-size: var(--secondary-time-font-size);
+        }
+        .clock #seconds {
+            margin: 0;
+            padding: 0;
+            color: var(--text-tone1);
+            font-size: var(--secondary-time-font-size);
+        }
+        .small-colon {
+            font-size: var(--secondary-time-font-size);
+        }
+
+        .terminal-container {
+            display: flex;
+            grid-template-columns: repeat(7, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            flex-direction: row;
+            justify-content: center;
+            align-items: baseline;
+            font-family: var(--font-family);
+            font-size: var(--secondary-text-font-size);
+            color: var(--text-tone1);
+            margin: 0;
+        }
+        .input-marker {
+            font-size: var(--secondary-text-font-size);
+            color: var(--text-tone1);
+            margin: 0;
+            padding-right: 1vw;
+        }
+        .terminal-container #terminal-input {
+            font-size: var(--secondary-text-font-size);
+            background-color: var(--background-tone1);
+            white-space: nowrap;
+            overflow: hidden;
+            height: 8vh;
+            max-width: 90vw;
+            flex-direction: row;
+            border: none;
+            outline: none;
+            padding-bottom: 10vh;
+            /*we want it to sort of slowly blink*/
+            animation: blink 2s infinite;
+        }
+        @keyframes blink {
+            0% { color: var(--text-tone1); }
+            50% { color: var(--background-tone1); }
+            100% { color: var(--text-tone1); }
+        }
+        .terminal-container #terminal-input.is-focused:focus {
+            font-size: var(--secondary-text-font-size);
+            color: var(--text-tone1);
+            flex-direction: row;
+            justify-content: right;
+            background-color: var(--background-tone1);
+            border: none;
+            outline: none;
+            animation: none;
+        }
+
+        *[contenteditable]:empty:before
+        {
+            content: "\feff"; /* ZERO WIDTH NO-BREAK SPACE */
+        }
+
+    </style>
+</head>
+<body>
+    <div class="clock">
+        <div class="time">
+            <p id="hours"> </p>
+            <span>:</span>
+            <p id="minutes"> </p>
+            <span class="small-colon">:</span>
+            <p id="seconds"> </p>
+            <p id="ampm"> </p>
+        </div>
+        <h1 id="greeting-text", class="greeting-text">Hello, World!</h1>
+    </div>
+
+    <div class="terminal-container">
+        <p class="input-marker">></p>
+        <span contenteditable="true" spellcheck="false" id="terminal-input">...</span>
+    </div>
+    <div class="links-container-h">
+        <div class="button-container-h">
+            <a class="button" href="#">Link 1</a>
+            <a class="button" href="#">Link 2</a>
+            <a class="button" href="#">Link 3</a>
+            <a class="button" href="#">Link 4</a>
+            <a class="button" href="#">Link 5</a>
+            <a class="button" href="#">Link 6</a>
+            <a class="button" href="#">Link 7</a>
+            <a class="button" href="#">Link 8</a>
+        </div>
+    </div>
+
+    <script>
+        // time and greeting
+        const greeting = document.querySelector("#greeting-text");
+        const date = new Date();
+        const hours = date.getHours();
+
+        if (hours < 12) {
+            greeting.textContent = "おはようございます、チュリさん";
+        } else if (hours < 20) {
+            greeting.textContent = "お帰りなさい、チュリ";
+        } else {
+            greeting.textContent = "眠ってください、チュリ‼";
+        }
+
+        function updateClock() {
+            let date = new Date();
+            let hours = date.getHours();
+            let minutes = date.getMinutes().toString().padStart(2, '0');
+            let seconds = date.getSeconds().toString().padStart(2, '0');
+            let ampm = hours >= 12 ? '午前' : '午後';
+            hours = (hours % 12 || 12).toString().padStart(2, '0');
+
+            document.querySelector("#hours").textContent = hours;
+            document.querySelector("#minutes").textContent = minutes;
+            document.querySelector("#seconds").textContent = seconds;
+            document.querySelector("#ampm").textContent = ampm;
+        }
+
+        setInterval(updateClock, 1);
+
+        const input = document.querySelector("#terminal-input");
+
+        function handleSearch() {
+            let search = input.textContent.trim();
+            if (search !== "") {
+                window.open("https://www.google.com/search?q=" + search);
+            }
+            input.textContent = "";
+        }
+
+        function choose(choices) {
+            var index = Math.floor(Math.random() * choices.length);
+            return choices[index];
+        }
+
+        let default_searches = [
+            "How to uninstall Reddit?",
+            "How to train my Roomba to play Go?",
+            "What the fuck is a kilometer???",
+            "WTF is an acronym?",
+            "Minecraft Wiki",
+            "Akai Haato",
+            "Nightclub etiquette for introverts",
+            "Note in Shien package",
+            "www.youtube.com/watch?v=dQw4w9WgXcQ",
+            "“DO NOT TOUCH” in braille",
+            "One Piece live-action",
+            "Can I safely look at a picture of the sun?"
+        ];
+
+        // Execute this on page load
+        window.addEventListener("load", (event) => {
+            input.textContent = choose(default_searches);
+        });
+
+        input.addEventListener('focus', function(){
+            this.classList.add('is-focused');
+            input.textContent = "";
+            
+        });
+
+        input.addEventListener('blur', function(){
+            this.classList.remove('is-focused');
+            input.textContent = choose(default_searches);
+        });
+
+        input.addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                handleSearch();
+            }
+        });
+
+        document.addEventListener("keydown", function(event) {
+            if (event.key.match(/^[a-zA-Z0-9]$/)) {
+                if (document.activeElement !== input) {
+                    input.textContent = "";
+                    input.focus();
+                }
+            }
+        });
+
+    </script>
+</body>
