@@ -39,7 +39,7 @@
             --button-color: #1b1b1f;
             --hover-color: #627b99;
             --text-tone1: #D8DEE9;
-            --text-tone2: #D8DEE9;
+            --text-tone2: #627b99;
             --background-tone1: #111113;
             --background-tone2: #4C566A;
 
@@ -106,7 +106,7 @@
             /* jump up a bit */
             transform: translateY(-5px);
             background-color: var(--hover-color);
-            color: var(--text-tone2);
+            color: var(--background-tone1);
         }
         .clock {
             padding-top: 10vh;
@@ -184,6 +184,7 @@
         .terminal-container #terminal-input {
             font-size: var(--secondary-text-font-size);
             background-color: var(--background-tone1);
+            color: var(--text-tone2);
             white-space: nowrap;
             overflow: hidden;
             height: 8vh;
@@ -195,13 +196,13 @@
             animation: blink 2s infinite;
         }
         @keyframes blink {
-            0% { color: var(--text-tone1); }
+            0% { color: var(--text-tone2); }
             50% { color: var(--background-tone1); }
-            100% { color: var(--text-tone1); }
+            100% { color: var(--text-tone2); }
         }
         .terminal-container #terminal-input.is-focused:focus {
             font-size: var(--secondary-text-font-size);
-            color: var(--text-tone1);
+            color: var(--text-tone2);
             flex-direction: row;
             justify-content: right;
             background-color: var(--background-tone1);
@@ -279,8 +280,36 @@
         setInterval(updateClock, 1);
 
 
-        
+
         // Search
+        const intervalMap = new Map();
+
+        function typeIn(element, text, delay = 100) {
+            if (intervalMap.has(element)) {
+                clearInterval(intervalMap.get(element));
+            }
+
+            // Check if the element is focused
+            if (document.activeElement == element) {
+                return;
+            }
+
+            element.textContent = "";
+            const letters = text.split("");
+            let i = 0;
+            const interval = setInterval(() => {
+                if (i < letters.length) {
+                    element.textContent += letters[i];
+                    i++;
+                } else {
+                    clearInterval(interval);
+                    intervalMap.delete(element);
+                }
+            }, delay);
+
+            // Store the interval ID for this element
+            intervalMap.set(element, interval);
+        }
 
         const input = document.querySelector("#terminal-input");
 
@@ -316,7 +345,7 @@
         // Execute this on page load
         window.addEventListener("load", (event) => {
             last_text = choose(default_searches);
-            input.textContent = last_text;
+            typeIn(input, last_text, 25)
 
         });
 
@@ -328,7 +357,7 @@
 
         input.addEventListener('blur', function(){
             this.classList.remove('is-focused');
-            input.textContent = last_text;
+            typeIn(input, last_text, 25)
         });
 
         input.addEventListener("keydown", function(event) {
@@ -349,27 +378,38 @@
 
         const buttons = document.querySelectorAll(".button");
         let hovering = false;
+        // list of timeouts for each button
+        let timeouts = [];
 
         buttons.forEach(button => {
+            let timeout;
+
             button.addEventListener("mouseover", () => {
                 const href = button.getAttribute("href");
+                if (hovering) {
+                    return;
+                }
                 if (href == "https://dash.cloudflare.com/4707e74357736a70439dd7037a98231c/churi.dev") {
-                    input.textContent = "https://dash.cloudflare.com/@/churi.dev";
+                    typeIn(input, "https://dash.cloudflare.com/@/churi.dev", 25)
                     hovering = true;
                 }
                 else {
-                    input.textContent = href;
+                    typeIn(input, href, 25)
                     hovering = true;
                 }
             });
 
             button.addEventListener("mouseout", () => {
-                hovering = false;
-                setTimeout(() => {
+                // clear all timeouts
+                timeouts.forEach(timeout => {
+                    clearTimeout(timeout);
+                });
+                timeout = setTimeout(() => {
                     if (!hovering) {
-                        input.textContent = last_text;
+                        typeIn(input, last_text, 25)
                     }
                 }, 1000);
+                timeouts.push(timeout);
             });
         });
 
