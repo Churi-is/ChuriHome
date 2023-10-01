@@ -378,13 +378,20 @@
 
         const buttons = document.querySelectorAll(".button");
         let hovering = false;
-        // list of timeouts for each button
         let timeouts = [];
+
+        function debounce(func, delay=100) {
+            let timer;
+            return function () {
+                clearTimeout(timer);
+                timer = setTimeout(func, delay);
+            };
+        }
 
         buttons.forEach(button => {
             let timeout;
 
-            button.addEventListener("mouseover", () => {
+            button.addEventListener("mouseover", debounce(() =>{
                 const href = button.getAttribute("href");
                 if (hovering) {
                     return;
@@ -397,20 +404,20 @@
                     typeIn(input, href, 25)
                     hovering = true;
                 }
-            });
+            }));
 
-            button.addEventListener("mouseout", () => {
-                // clear all timeouts
+            button.addEventListener("mouseout", debounce(() =>{
                 timeouts.forEach(timeout => {
                     clearTimeout(timeout);
                 });
+                hovering = false;
                 timeout = setTimeout(() => {
                     if (!hovering) {
                         typeIn(input, last_text, 25)
                     }
                 }, 1000);
                 timeouts.push(timeout);
-            });
+            }));
         });
 
 
