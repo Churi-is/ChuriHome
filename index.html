@@ -1,12 +1,45 @@
 <head>
     <link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet'>
+    <script>
+    /**
+     * Replace all SVG images with inline SVG
+     */
+     jQuery('img.svg').each(function(){
+            var $img = jQuery(this);
+            var imgID = $img.attr('id');
+            var imgClass = $img.attr('class');
+            var imgURL = $img.attr('src');
+
+            jQuery.get(imgURL, function(data) {
+                // Get the SVG tag, ignore the rest
+                var $svg = jQuery(data).find('svg');
+
+                // Add replaced image's ID to the new SVG
+                if(typeof imgID !== 'undefined') {
+                    $svg = $svg.attr('id', imgID);
+                }
+                // Add replaced image's classes to the new SVG
+                if(typeof imgClass !== 'undefined') {
+                    $svg = $svg.attr('class', imgClass+' replaced-svg');
+                }
+
+                // Remove any invalid XML tags as per http://validator.w3.org
+                $svg = $svg.removeAttr('xmlns:a');
+
+                // Replace image with new SVG
+                $img.replaceWith($svg);
+
+            }, 'xml');
+
+        });
+    </script>
     <style>
         :root {
             /* Color Palette */
             --button-color: #1b1b1f;
             --hover-color: #627b99;
             --text-tone1: #D8DEE9;
-            --text-tone2: #ECEFF4;
+            --text-tone2: #D8DEE9;
             --background-tone1: #111113;
             --background-tone2: #4C566A;
 
@@ -18,6 +51,7 @@
             --primary-text-font-size: 8vh;
             --secondary-text-font-size: 6vh;
             --tertiary-text-font-size: 4vh;
+            --icon-font-size: 3.5vh;
 
             --list-font-size: 2vh;
             --list-name-font-size: 3vh;
@@ -62,6 +96,7 @@
             color: var(--text-tone1);
             text-decoration: none;
             font-family: var(--font-family);
+            font-size: var(--icon-font-size);
             box-shadow: 0 7px 10px rgba(0, 0, 0, 0.3);
             height: 100%;
             width: 100%;
@@ -157,7 +192,6 @@
             border: none;
             outline: none;
             padding-bottom: 10vh;
-            /*we want it to sort of slowly blink*/
             animation: blink 2s infinite;
         }
         @keyframes blink {
@@ -182,6 +216,7 @@
         }
 
     </style>
+    <title>🏠 Home</title>
 </head>
 <body>
     <div class="clock">
@@ -193,7 +228,7 @@
             <p id="seconds"> </p>
             <p id="ampm"> </p>
         </div>
-        <h1 id="greeting-text", class="greeting-text">Hello, World!</h1>
+        <h1 id="greeting-text", class="greeting-text"></h1>
     </div>
 
     <div class="terminal-container">
@@ -202,14 +237,14 @@
     </div>
     <div class="links-container-h">
         <div class="button-container-h">
-            <a class="button" href="#">Link 1</a>
-            <a class="button" href="#">Link 2</a>
-            <a class="button" href="#">Link 3</a>
-            <a class="button" href="#">Link 4</a>
-            <a class="button" href="#">Link 5</a>
-            <a class="button" href="#">Link 6</a>
-            <a class="button" href="#">Link 7</a>
-            <a class="button" href="#">Link 8</a>
+            <a class="button" href="https://www.youtube.com"><ion-icon name="logo-youtube"></ion-icon></a>
+            <a class="button" href="https://github.com"><ion-icon name="logo-github"></ion-icon></a>
+            <a class="button" href="https://online-go.com"><ion-icon name="git-commit-outline"></ion-icon></a>
+            <a class="button" href="https://chat.openai.com/"><ion-icon name="desktop-outline"></ion-icon></a>
+            <a class="button" href="https://mail.proton.me/u/3/inbox"><ion-icon name="mail-outline"></ion-icon></a>
+            <a class="button" href="https://twitter.com/home">𝕏</a>
+            <a class="button" href="https://console.cloud.google.com/"><ion-icon name="cloud-outline"></ion-icon></a>
+            <a class="button" href="https://dash.cloudflare.com/4707e74357736a70439dd7037a98231c/churi.dev"><ion-icon name="git-merge-outline"></ion-icon></a>
         </div>
     </div>
 
@@ -243,6 +278,10 @@
 
         setInterval(updateClock, 1);
 
+
+        
+        // Search
+
         const input = document.querySelector("#terminal-input");
 
         function handleSearch() {
@@ -266,16 +305,19 @@
             "Minecraft Wiki",
             "Akai Haato",
             "Nightclub etiquette for introverts",
-            "Note in Shien package",
+            "Note in Shien package?",
             "www.youtube.com/watch?v=dQw4w9WgXcQ",
             "“DO NOT TOUCH” in braille",
             "One Piece live-action",
             "Can I safely look at a picture of the sun?"
         ];
+        let last_text;
 
         // Execute this on page load
         window.addEventListener("load", (event) => {
-            input.textContent = choose(default_searches);
+            last_text = choose(default_searches);
+            input.textContent = last_text;
+
         });
 
         input.addEventListener('focus', function(){
@@ -286,7 +328,7 @@
 
         input.addEventListener('blur', function(){
             this.classList.remove('is-focused');
-            input.textContent = choose(default_searches);
+            input.textContent = last_text;
         });
 
         input.addEventListener("keydown", function(event) {
@@ -305,5 +347,34 @@
             }
         });
 
+        const buttons = document.querySelectorAll(".button");
+        let hovering = false;
+
+        buttons.forEach(button => {
+            button.addEventListener("mouseover", () => {
+                const href = button.getAttribute("href");
+                if (href == "https://dash.cloudflare.com/4707e74357736a70439dd7037a98231c/churi.dev") {
+                    input.textContent = "https://dash.cloudflare.com/@/churi.dev";
+                    hovering = true;
+                }
+                else {
+                    input.textContent = href;
+                    hovering = true;
+                }
+            });
+
+            button.addEventListener("mouseout", () => {
+                hovering = false;
+                setTimeout(() => {
+                    if (!hovering) {
+                        input.textContent = last_text;
+                    }
+                }, 1000);
+            });
+        });
+
+
     </script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </body>
